@@ -1,4 +1,3 @@
-// Common UI helpers (sidebar, backdrop, notifications, toast)
 const $ = (sel) => document.querySelector(sel);
 
 function showToast(msg) {
@@ -30,11 +29,11 @@ function closeSidebar() {
 
 function initCommonUI() {
   const menuBtn = $("#menuBtn");
-  const closeSidebarBtn = $("#closeSidebarBtn");
+  const closeBtn = $("#closeSidebarBtn");
   const backdrop = $("#backdrop");
 
   menuBtn?.addEventListener("click", openSidebar);
-  closeSidebarBtn?.addEventListener("click", closeSidebar);
+  closeBtn?.addEventListener("click", closeSidebar);
   backdrop?.addEventListener("click", closeSidebar);
 
   const notifBtn = $("#notifBtn");
@@ -47,4 +46,6 @@ function initCommonUI() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", initCommonUI);
+window.PS = window.PS || {};
+PS.showToast = showToast;
+PS.initCommonUI = initCommonUI;

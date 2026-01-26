@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PharmaSurplus — Pedidos</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div id="backdrop" class="backdrop" hidden></div>
+
+  <aside id="sidebar" class="sidebar" aria-hidden="true">
+    <div class="sidebar__header">
+      <div class="brand-mini">
+        <div class="logo">PS</div>
+        <div>
+          <div class="brand-mini__name">PharmaSurplus</div>
+          <div class="brand-mini__tag">B2B entre farmácias</div>
+        </div>
+      </div>
+
+      <button id="closeSidebarBtn" class="icon-btn" aria-label="Fechar menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a class="nav-item" href="index.html" data-nav="store"><span class="nav-item__icon">🏪</span> Loja</a>
+      <a class="nav-item is-active" href="orders.html" data-nav="orders"><span class="nav-item__icon">🧾</span> Pedidos</a>
+      <a class="nav-item" href="profile.html" data-nav="profile"><span class="nav-item__icon">👤</span> Perfil</a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="hint">Protótipo. Sem pagamentos reais.</div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar__left">
+      <button id="menuBtn" class="icon-btn" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="brand">
+        <div class="logo">PS</div>
+        <div class="brand__text">
+          <div class="brand__name">PharmaSurplus</div>
+          <div class="brand__tag">Pedidos e histórico</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar__center"></div>
+
+    <div class="topbar__right">
+      <button id="notifBtn" class="icon-btn" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22Z" fill="currentColor" opacity="0.9"/>
+          <path d="M18 16H6c1.2-1.2 2-2.7 2-4.5V9.5A4 4 0 0 1 12 5.5a4 4 0 0 1 4 4v2c0 1.8.8 3.3 2 4.5Z"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M10 5.5a2 2 0 0 1 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span id="notifDot" class="dot" title="Tens notificações"></span>
+      </button>
+
+      <a class="icon-btn" aria-label="Perfil" href="profile.html">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M20 21a8 8 0 1 0-16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>Pedidos</h1>
+      <p>Simulação: pedidos de compra/reserva feitos a outras farmácias.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel__row">
+        <div class="panel__title">Pedidos recentes</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="seedOrdersBtn" class="btn" type="button">Gerar exemplos</button>
+          <button id="clearOrdersBtn" class="btn" type="button">Limpar</button>
+        </div>
+      </div>
+      <div id="ordersList" class="list"></div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="orders.js"></script>
+</body>
+</html>

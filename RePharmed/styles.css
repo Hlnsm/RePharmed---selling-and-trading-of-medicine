@@ -1,25 +1,31 @@
 :root{
-  --bg: #0b1220;
+  /* Base */
+  --bg: #0b1410;                    /* verde muito escuro */
   --surface: rgba(255,255,255,0.06);
   --surface2: rgba(255,255,255,0.10);
   --border: rgba(255,255,255,0.14);
-  --text: rgba(255,255,255,0.92);
-  --muted: rgba(255,255,255,0.70);
-  --muted2: rgba(255,255,255,0.55);
+
+  --text: rgba(255,255,255,0.94);
+  --muted: rgba(255,255,255,0.72);
+  --muted2: rgba(255,255,255,0.56);
+
   --shadow: 0 12px 36px rgba(0,0,0,0.35);
   --radius: 16px;
   --radius2: 20px;
 
-  --primary: #7c5cff;
-  --primary2: #a89bff;
+  /* 🌿 Brand (Farmácia) */
+  --primary: #2ecc71;               /* verde saúde */
+  --primary2: #a8e6c3;              /* verde claro */
 
-  --good: #2ee59d;
-  --warn: #ffcc66;
-  --bad: #ff6b6b;
+  /* Estados */
+  --good: #2ecc71;
+  --warn: #f1c40f;
+  --bad: #e74c3c;
 
   --max: 1200px;
-  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
+
 
 *{ box-sizing: border-box; }
 html, body { height: 100%; }
@@ -224,12 +230,18 @@ button, input, select { font: inherit; }
   background: rgba(255,255,255,0.08);
 }
 .card__media{
-  height: 86px;
-  background:
-    radial-gradient(80px 60px at 30% 30%, rgba(255,255,255,0.18), transparent 60%),
-    radial-gradient(120px 80px at 70% 40%, rgba(124,92,255,0.28), transparent 60%),
-    rgba(255,255,255,0.04);
+  height: 120px; /* aumentei para caber a imagem */
   position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,0.04);
+}
+
+.card__img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* corta bem */
+  display: block;
+  filter: saturate(1.05) contrast(1.05);
 }
 .badge{
   position:absolute;

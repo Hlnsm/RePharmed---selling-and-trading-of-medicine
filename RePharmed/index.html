@@ -8,10 +8,8 @@
 </head>
 
 <body>
-  <!-- Backdrop for drawers/modals -->
   <div id="backdrop" class="backdrop" hidden></div>
 
-  <!-- Sidebar (Hamburger Menu) -->
   <aside id="sidebar" class="sidebar" aria-hidden="true">
     <div class="sidebar__header">
       <div class="brand-mini">
@@ -23,7 +21,6 @@
       </div>
 
       <button id="closeSidebarBtn" class="icon-btn" aria-label="Fechar menu">
-        <!-- X icon -->
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
@@ -31,32 +28,25 @@
     </div>
 
     <nav class="sidebar__nav">
-      <button class="nav-item is-active" data-view="store">
-        <span class="nav-item__icon">🏪</span>
-        Loja
-      </button>
-      <button class="nav-item" data-view="orders">
-        <span class="nav-item__icon">🧾</span>
-        Pedidos
-      </button>
-      <button class="nav-item" data-view="profile">
-        <span class="nav-item__icon">👤</span>
-        Perfil
-      </button>
+      <a class="nav-item is-active" href="index.html" data-nav="store">
+        <span class="nav-item__icon">🏪</span> Loja
+      </a>
+      <a class="nav-item" href="orders.html" data-nav="orders">
+        <span class="nav-item__icon">🧾</span> Pedidos
+      </a>
+      <a class="nav-item" href="profile.html" data-nav="profile">
+        <span class="nav-item__icon">👤</span> Perfil
+      </a>
     </nav>
 
     <div class="sidebar__footer">
-      <div class="hint">
-        Protótipo. Sem pagamentos reais.
-      </div>
+      <div class="hint">Protótipo. Sem pagamentos reais.</div>
     </div>
   </aside>
 
-  <!-- Top Bar -->
   <header class="topbar">
     <div class="topbar__left">
       <button id="menuBtn" class="icon-btn" aria-label="Abrir menu">
-        <!-- Hamburger -->
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
           <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
@@ -87,7 +77,6 @@
 
     <div class="topbar__right">
       <button id="notifBtn" class="icon-btn" aria-label="Notificações">
-        <!-- Bell -->
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
           <path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22Z" fill="currentColor" opacity="0.9"/>
           <path d="M18 16H6c1.2-1.2 2-2.7 2-4.5V9.5A4 4 0 0 1 12 5.5a4 4 0 0 1 4 4v2c0 1.8.8 3.3 2 4.5Z"
@@ -97,146 +86,85 @@
         <span id="notifDot" class="dot" title="Tens notificações"></span>
       </button>
 
-      <button id="userBtn" class="icon-btn" aria-label="Perfil">
-        <!-- User -->
+      <a class="icon-btn" aria-label="Perfil" href="profile.html">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
           <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M20 21a8 8 0 1 0-16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-      </button>
+      </a>
     </div>
   </header>
 
-  <!-- Main content -->
   <main class="container">
-    <!-- STORE VIEW -->
-    <section id="view-store" class="view is-visible">
-      <div class="controls">
-        <div class="filters">
-          <div class="filter">
-            <label class="filter__label" for="categorySelect">Categoria</label>
-            <select id="categorySelect" class="filter__control">
-              <option value="all">Todas</option>
-              <option value="analgesicos">Analgésicos</option>
-              <option value="antibioticos">Antibióticos</option>
-              <option value="dermo">Dermo</option>
-              <option value="gripe">Gripe &amp; Constipação</option>
-              <option value="vitaminas">Vitaminas</option>
-            </select>
-          </div>
+    <section class="controls">
+      <div class="filters">
+        <div class="filter">
+          <label class="filter__label" for="categorySelect">Categoria</label>
+          <select id="categorySelect" class="filter__control">
+            <option value="all">Todas</option>
+            <option value="analgesicos">Analgésicos</option>
+            <option value="antibioticos">Antibióticos</option>
+            <option value="dermo">Dermo</option>
+            <option value="gripe">Gripe &amp; Constipação</option>
+            <option value="vitaminas">Vitaminas</option>
+          </select>
+        </div>
 
-          <div class="filter">
-            <label class="filter__label">Preço (€)</label>
-            <div class="range">
-              <input id="priceMin" class="filter__control" type="number" min="0" step="0.5" placeholder="Min" />
-              <span class="range__sep">—</span>
-              <input id="priceMax" class="filter__control" type="number" min="0" step="0.5" placeholder="Max" />
-            </div>
-          </div>
-
-          <div class="filter">
-            <label class="filter__label" for="distanceSelect">Distância</label>
-            <select id="distanceSelect" class="filter__control">
-              <option value="9999">Qualquer</option>
-              <option value="2">Até 2 km</option>
-              <option value="5">Até 5 km</option>
-              <option value="10">Até 10 km</option>
-              <option value="25">Até 25 km</option>
-            </select>
-          </div>
-
-          <div class="filter">
-            <label class="filter__label" for="sortSelect">Ordenar</label>
-            <select id="sortSelect" class="filter__control">
-              <option value="relevance">Relevância</option>
-              <option value="price_asc">Preço ↑</option>
-              <option value="price_desc">Preço ↓</option>
-              <option value="expiry_asc">Expira mais cedo</option>
-              <option value="distance_asc">Mais perto</option>
-            </select>
+        <div class="filter">
+          <label class="filter__label">Preço (€)</label>
+          <div class="range">
+            <input id="priceMin" class="filter__control" type="number" min="0" step="0.5" placeholder="Min" />
+            <span class="range__sep">—</span>
+            <input id="priceMax" class="filter__control" type="number" min="0" step="0.5" placeholder="Max" />
           </div>
         </div>
 
-        <div class="actions">
-          <button id="newListingBtn" class="btn btn--primary" type="button">
-            Criar anúncio
-          </button>
-          <button id="resetBtn" class="btn" type="button">
-            Limpar filtros
-          </button>
+        <div class="filter">
+          <label class="filter__label" for="distanceSelect">Distância</label>
+          <select id="distanceSelect" class="filter__control">
+            <option value="9999">Qualquer</option>
+            <option value="2">Até 2 km</option>
+            <option value="5">Até 5 km</option>
+            <option value="10">Até 10 km</option>
+            <option value="25">Até 25 km</option>
+          </select>
+        </div>
+
+        <div class="filter">
+          <label class="filter__label" for="sortSelect">Ordenar</label>
+          <select id="sortSelect" class="filter__control">
+            <option value="relevance">Relevância</option>
+            <option value="price_asc">Preço ↑</option>
+            <option value="price_desc">Preço ↓</option>
+            <option value="expiry_asc">Expira mais cedo</option>
+            <option value="distance_asc">Mais perto</option>
+          </select>
         </div>
       </div>
 
-      <div class="meta">
-        <div id="resultCount" class="meta__count">—</div>
-        <div class="meta__hint">Dica: usa pesquisa + categoria + distância para simular o “match” entre farmácias.</div>
-      </div>
-
-      <section id="cards" class="cards" aria-label="Lista de anúncios"></section>
-
-      <div id="emptyState" class="empty" hidden>
-        <div class="empty__title">Sem resultados</div>
-        <div class="empty__text">Ajusta os filtros ou pesquisa por outro termo.</div>
+      <div class="actions">
+        <button id="newListingBtn" class="btn btn--primary" type="button">Criar anúncio</button>
+        <button id="resetBtn" class="btn" type="button">Limpar filtros</button>
       </div>
     </section>
 
-    <!-- ORDERS VIEW -->
-    <section id="view-orders" class="view">
-      <div class="page-header">
-        <h1>Pedidos</h1>
-        <p>Simulação: pedidos de compra/reserva feitos a outras farmácias.</p>
-      </div>
+    <div class="meta">
+      <div id="resultCount" class="meta__count">—</div>
+      <div class="meta__hint">Protótipo: pesquisa + filtros simulam o match entre farmácias.</div>
+    </div>
 
-      <div class="panel">
-        <div class="panel__row">
-          <div class="panel__title">Pedidos recentes</div>
-          <button id="seedOrdersBtn" class="btn" type="button">Gerar exemplos</button>
-        </div>
-        <div id="ordersList" class="list"></div>
-      </div>
-    </section>
+    <section id="cards" class="cards" aria-label="Lista de anúncios"></section>
 
-    <!-- PROFILE VIEW -->
-    <section id="view-profile" class="view">
-      <div class="page-header">
-        <h1>Perfil</h1>
-        <p>Informação da tua farmácia e preferências do protótipo.</p>
-      </div>
-
-      <div class="panel">
-        <div class="profile">
-          <div class="profile__card">
-            <div class="profile__label">Farmácia</div>
-            <div class="profile__value">Farmácia Central (Demo)</div>
-
-            <div class="profile__label">Localização</div>
-            <div class="profile__value">Lisboa — 1000-000</div>
-
-            <div class="profile__label">Tipo</div>
-            <div class="profile__value">Comprador + Vendedor</div>
-
-            <button id="goStoreBtn" class="btn btn--primary" type="button">Ir para a loja</button>
-          </div>
-
-          <div class="profile__card">
-            <div class="profile__label">Preferências</div>
-            <div class="toggle">
-              <input id="prefNotif" type="checkbox" checked />
-              <label for="prefNotif">Ativar notificações de novos anúncios</label>
-            </div>
-            <div class="toggle">
-              <input id="prefNear" type="checkbox" />
-              <label for="prefNear">Priorizar anúncios até 5 km</label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <div id="emptyState" class="empty" hidden>
+      <div class="empty__title">Sem resultados</div>
+      <div class="empty__text">Ajusta os filtros ou pesquisa por outro termo.</div>
+    </div>
   </main>
 
-  <!-- Toast -->
   <div id="toast" class="toast" hidden></div>
 
-  <script src="app.js"></script>
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="store.js"></script>
 </body>
 </html>
