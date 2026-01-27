@@ -31,6 +31,8 @@
       <a class="nav-item" href="index.html" data-nav="store"><span class="nav-item__icon">🏪</span> Loja</a>
       <a class="nav-item is-active" href="orders.html" data-nav="orders"><span class="nav-item__icon">🧾</span> Pedidos</a>
       <a class="nav-item" href="profile.html" data-nav="profile"><span class="nav-item__icon">👤</span> Perfil</a>
+      <a class="nav-item" href="receipts.html"><span class="nav-item__icon">📦</span> Recibos</a>
+
     </nav>
 
     <div class="sidebar__footer">
@@ -50,7 +52,7 @@
         <div class="logo">PS</div>
         <div class="brand__text">
           <div class="brand__name">PharmaSurplus</div>
-          <div class="brand__tag">Pedidos e histórico</div>
+          <div class="brand__tag">Pedidos (Procura)</div>
         </div>
       </div>
     </div>
@@ -79,24 +81,95 @@
 
   <main class="container">
     <div class="page-header">
-      <h1>Pedidos</h1>
-      <p>Simulação: pedidos de compra/reserva feitos a outras farmácias.</p>
+      <h1>Pedidos (Procura)</h1>
+      <p>Farmácias publicam pedidos de medicamentos. Outras farmácias podem responder com proposta.</p>
     </div>
 
-    <div class="panel">
-      <div class="panel__row">
-        <div class="panel__title">Pedidos recentes</div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <button id="seedOrdersBtn" class="btn" type="button">Gerar exemplos</button>
-          <button id="clearOrdersBtn" class="btn" type="button">Limpar</button>
+    <section class="controls">
+      <div class="filters">
+        <div class="filter">
+          <label class="filter__label" for="reqSearch">Pesquisar</label>
+          <input id="reqSearch" class="filter__control" type="search"
+                 placeholder="nome, substância ativa, farmácia, cidade…" />
+        </div>
+
+        <div class="filter">
+          <label class="filter__label" for="reqCategory">Categoria</label>
+          <select id="reqCategory" class="filter__control">
+            <option value="all">Todas</option>
+            <option value="analgesicos">Analgésicos</option>
+            <option value="antibioticos">Antibióticos</option>
+            <option value="dermo">Dermo</option>
+            <option value="gripe">Gripe &amp; Constipação</option>
+            <option value="vitaminas">Vitaminas</option>
+          </select>
+        </div>
+
+        <div class="filter">
+          <label class="filter__label" for="reqDistance">Distância</label>
+          <select id="reqDistance" class="filter__control">
+            <option value="9999">Qualquer</option>
+            <option value="2">Até 2 km</option>
+            <option value="5">Até 5 km</option>
+            <option value="10">Até 10 km</option>
+            <option value="25">Até 25 km</option>
+          </select>
+        </div>
+
+        <div class="filter">
+          <label class="filter__label" for="reqSort">Ordenar</label>
+          <select id="reqSort" class="filter__control">
+            <option value="recent">Mais recentes</option>
+            <option value="distance">Mais perto</option>
+            <option value="maxprice_desc">Maior preço máx.</option>
+          </select>
         </div>
       </div>
-      <div id="ordersList" class="list"></div>
+
+      <div class="actions">
+        <button id="createRequestBtn" class="btn btn--primary" type="button">Criar pedido</button>
+        <button id="seedRequestsBtn" class="btn" type="button">Gerar exemplos</button>
+        <button id="resetReqBtn" class="btn" type="button">Limpar</button>
+      </div>
+    </section>
+
+    <div class="meta">
+      <div id="reqCount" class="meta__count">—</div>
+      <div class="meta__hint">Clica em “Responder” para simular proposta para um pedido.</div>
+    </div>
+
+    <section id="reqCards" class="cards" aria-label="Lista de pedidos"></section>
+
+    <div id="reqEmpty" class="empty" hidden>
+      <div class="empty__title">Sem pedidos</div>
+      <div class="empty__text">Gera exemplos ou cria um pedido novo.</div>
     </div>
   </main>
 
+  <!-- Modal simples (Criar/Responder) -->
+  <div id="modal" class="backdrop" hidden>
+    <div class="modal">
+      <div class="modal__head">
+        <div id="modalTitle" style="font-weight:900">—</div>
+        <button id="modalClose" class="icon-btn" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="modalBody" class="modal__body"></div>
+
+      <div class="modal__foot">
+        <button id="modalCancel" class="btn" type="button">Cancelar</button>
+        <button id="modalOk" class="btn btn--primary" type="button">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" hidden></div>
 
+  <!-- Scripts (ordem IMPORTA) -->
   <script src="data.js"></script>
   <script src="common.js"></script>
   <script src="orders.js"></script>

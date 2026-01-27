@@ -20,3 +20,31 @@ PS.loadOrders = function() {
 PS.saveOrders = function(orders) {
   localStorage.setItem("ps_orders", JSON.stringify(orders));
 };
+window.PS = window.PS || {};
+
+// Pedidos (WANTED)
+PS.loadRequests = function() {
+  try { return JSON.parse(localStorage.getItem("ps_requests") || "[]"); }
+  catch { return []; }
+};
+PS.saveRequests = function(reqs) {
+  localStorage.setItem("ps_requests", JSON.stringify(reqs));
+};
+
+// Respostas a pedidos
+PS.loadResponses = function() {
+  try { return JSON.parse(localStorage.getItem("ps_responses") || "[]"); }
+  catch { return []; }
+};
+PS.saveResponses = function(resps) {
+  localStorage.setItem("ps_responses", JSON.stringify(resps));
+};
+PS.loadReceipts = function() {
+  try { return JSON.parse(localStorage.getItem("ps_receipts") || "[]"); }
+  catch { return []; }
+};
+PS.saveReceipts = function(items) {
+  localStorage.setItem("ps_receipts", JSON.stringify(items));
+};
+
+

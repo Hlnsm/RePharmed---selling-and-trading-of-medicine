@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PharmaSurplus — Perfil</title>
+  <title>PharmaSurplus — Recibos</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -28,11 +28,10 @@
     </div>
 
     <nav class="sidebar__nav">
-      <a class="nav-item" href="index.html" data-nav="store"><span class="nav-item__icon">🏪</span> Loja</a>
-      <a class="nav-item" href="orders.html" data-nav="orders"><span class="nav-item__icon">🧾</span> Pedidos</a>
-      <a class="nav-item is-active" href="profile.html" data-nav="profile"><span class="nav-item__icon">👤</span> Perfil</a>
-      <a class="nav-item" href="receipts.html"><span class="nav-item__icon">📦</span> Recibos</a>
-
+      <a class="nav-item" href="index.html"><span class="nav-item__icon">🏪</span> Loja</a>
+      <a class="nav-item" href="orders.html"><span class="nav-item__icon">🧾</span> Pedidos</a>
+      <a class="nav-item is-active" href="receipts.html"><span class="nav-item__icon">📦</span> Recibos</a>
+      <a class="nav-item" href="profile.html"><span class="nav-item__icon">👤</span> Perfil</a>
     </nav>
 
     <div class="sidebar__footer">
@@ -52,7 +51,7 @@
         <div class="logo">PS</div>
         <div class="brand__text">
           <div class="brand__name">PharmaSurplus</div>
-          <div class="brand__tag">Conta e preferências</div>
+          <div class="brand__tag">Recibos e tracking</div>
         </div>
       </div>
     </div>
@@ -70,7 +69,7 @@
         <span id="notifDot" class="dot" title="Tens notificações"></span>
       </button>
 
-      <a class="icon-btn" aria-label="Perfil" href="profile.html" aria-current="page">
+      <a class="icon-btn" aria-label="Perfil" href="profile.html">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
           <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M20 21a8 8 0 1 0-16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -81,50 +80,60 @@
 
   <main class="container">
     <div class="page-header">
-      <h1>Perfil</h1>
-      <p>Informação da tua farmácia e preferências do protótipo.</p>
+      <h1>Recibos</h1>
+      <p>Compras, envios e entregas com tracking.</p>
     </div>
 
-    <div class="panel">
-      <div class="profile">
-        <div class="profile__card">
-          <div class="profile__label">Farmácia</div>
-          <div class="profile__value">Farmácia Central (Demo)</div>
-
-          <div class="profile__label">Localização</div>
-          <div class="profile__value">Lisboa — 1000-000</div>
-
-          <div class="profile__label">Tipo</div>
-          <div class="profile__value">Comprador + Vendedor</div>
-
-          <a href="index.html" class="btn btn--primary" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none; margin-top:12px;">
-            Ir para a loja
-          </a>
+    <section class="receipt-layout">
+      <div class="panel receipt-list">
+        <div class="panel__row">
+          <div class="panel__title">Atividade</div>
+          <div style="display:flex; gap:10px;">
+            <button id="seedReceiptsBtn" class="btn" type="button">Gerar exemplos</button>
+            <button id="clearReceiptsBtn" class="btn" type="button">Limpar</button>
+          </div>
         </div>
 
-        <div class="profile__card">
-          <div class="profile__label">Preferências</div>
-
-          <div class="toggle">
-            <input id="prefNotif" type="checkbox" checked />
-            <label for="prefNotif">Ativar notificações de novos anúncios</label>
+        <div class="filters" style="margin-top:10px;">
+          <div class="filter" style="flex:1;">
+            <label class="filter__label" for="rcSearch">Pesquisar</label>
+            <input id="rcSearch" class="filter__control" type="search" placeholder="ID, item, farmácia, tracking…" />
           </div>
 
-          <div class="toggle">
-            <input id="prefNear" type="checkbox" />
-            <label for="prefNear">Priorizar anúncios até 5 km</label>
+          <div class="filter" style="min-width:180px;">
+            <label class="filter__label" for="rcType">Tipo</label>
+            <select id="rcType" class="filter__control">
+              <option value="all">Todos</option>
+              <option value="purchase">Compras</option>
+              <option value="shipment">Envios</option>
+              <option value="delivery">Entregas</option>
+            </select>
           </div>
+        </div>
 
-          <button id="savePrefsBtn" class="btn" type="button" style="margin-top:12px;">Guardar</button>
+        <div id="rcList" class="list list--scroll"></div>
+      </div>
+
+      <div class="panel receipt-detail">
+        <div class="panel__row">
+          <div class="panel__title">Detalhes</div>
+          <div id="rcDetailTag" class="small"></div>
+        </div>
+
+        <div id="rcDetail" class="detail-body">
+          <div class="empty" style="margin-top:10px">
+            <div class="empty__title">Seleciona um recibo</div>
+            <div class="empty__text">Clica num item da lista para ver detalhes e tracking.</div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </main>
 
   <div id="toast" class="toast" hidden></div>
 
   <script src="data.js"></script>
   <script src="common.js"></script>
-  <script src="profile.js"></script>
+  <script src="receipts.js"></script>
 </body>
 </html>
