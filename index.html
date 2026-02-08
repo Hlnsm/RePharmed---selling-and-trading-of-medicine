@@ -201,10 +201,32 @@
 
       <div class="modal__foot">
         <button id="checkoutCancel" class="btn" type="button">Cancelar</button>
-        <button id="checkoutPay" class="btn btn--primary" type="button">Confirmar (demo)</button>
+        <button id="checkoutPay" class="btn btn--primary" type="button">Confirmar</button>
       </div>
     </div>
   </div>
+
+    <!-- New Listing Modal -->
+  <div id="newListingModal" class="backdrop" hidden>
+    <div class="modal">
+      <div class="modal__head">
+        <div style="font-weight:900">Criar anúncio</div>
+        <button id="newListingClose" class="icon-btn" aria-label="Fechar" type="button">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="newListingBody" class="modal__body"></div>
+
+      <div class="modal__foot">
+        <button id="newListingCancel" class="btn" type="button">Cancelar</button>
+        <button id="newListingCreate" class="btn btn--primary" type="button">Publicar</button>
+      </div>
+    </div>
+  </div>
+
 
   <div id="toast" class="toast" hidden></div>
 

@@ -431,14 +431,14 @@ function seedStatsDemo(){
       status: "Concluída",
       counterparty: ["Farmácia Luz","Farmácia Oriente","Farmácia do Parque","Farmácia Central"][i % 4],
       city: ["Lisboa","Oeiras","Amadora","Cascais"][i % 4],
-      notes: deliveryMethod === "pickup" ? "Levantamento em loja (demo)." : "Entrega por estafeta (demo)."
+      notes: deliveryMethod === "pickup" ? "Levantamento em loja ." : "Entrega por estafeta ."
     }));
   }
 
   // guarda + render
   if (window.PS && typeof PS.saveReceipts === "function") {
     PS.saveReceipts(demo);
-    if (typeof PS.showToast === "function") PS.showToast("Dados demo (12 meses) gerados");
+    if (typeof PS.showToast === "function") PS.showToast("Dados (12 meses) gerados");
   }
 
   renderDashboard();

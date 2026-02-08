@@ -197,7 +197,7 @@ function renderRequestCards(items) {
         <div class="pills">
           <span class="pill">${labelCategory(r.category)}</span>
           <span class="pill">Qtd: ${r.quantity}</span>
-          <span class="pill">Prazo: ${r.deadlineDays} dias</span>
+          <span class="pill">Prazo: ${r.deadlineDays} meses</span>
         </div>
       </div>
 
@@ -283,7 +283,7 @@ function seedRequests() {
       requester: "Farmácia do Parque",
       city: "Oeiras",
       urgent: false,
-      notes: "Pode ser marca equivalente. Pagamento por referência/transferência (demo).",
+      notes: "Pode ser marca equivalente. Pagamento por referência/transferência.",
       createdAt: new Date().toLocaleString("pt-PT"),
       createdAtTs: now - 1000 * 60 * 15
     },
@@ -299,7 +299,7 @@ function seedRequests() {
       requester: "Farmácia Luz",
       city: "Lisboa",
       urgent: false,
-      notes: "Aceitamos várias marcas. Importante fatura simplificada (demo).",
+      notes: "Aceitamos várias marcas. Importante fatura simplificada.",
       createdAt: new Date().toLocaleString("pt-PT"),
       createdAtTs: now - 1000 * 60 * 5
     }
@@ -339,7 +339,7 @@ function openCreateRequest() {
       <input id="fMax" type="number" min="0" step="0.1" value="5.0" />
     </div>
     <div class="field">
-      <label>Prazo (dias)</label>
+      <label>Prazo (meses)</label>
       <input id="fDeadline" type="number" min="1" value="7" />
     </div>
     <div class="field">
@@ -378,7 +378,7 @@ function openCreateRequest() {
       deadlineDays: Number($("#fDeadline").value) || 7,
       urgent: $("#fUrgent").value === "true",
       distanceKm: 999.0,
-      requester: "Farmácia Central (Demo)",
+      requester: "Farmácia Central",
       city: "Lisboa",
       notes: $("#fNotes").value.trim(),
       createdAt: new Date().toLocaleString("pt-PT"),
@@ -416,7 +416,7 @@ function openRespond(requestId) {
       <input id="pQty" type="number" min="1" value="${Math.min(r.quantity, 10)}" />
     </div>
     <div class="field">
-      <label>Validade (dias até expirar)</label>
+      <label>Validade (meses até expirar)</label>
       <input id="pExpiry" type="number" min="1" value="30" />
     </div>
     <div class="field">
@@ -432,7 +432,7 @@ function openRespond(requestId) {
     const resp = {
       id: `RSP-${Math.floor(Math.random() * 9000 + 1000)}`,
       requestId: r.id,
-      responder: "Farmácia Oriente (Demo)",
+      responder: "Farmácia Oriente",
       price: Number($("#pPrice").value) || 0,
       quantity: Number($("#pQty").value) || 1,
       expiryDays: Number($("#pExpiry").value) || 30,
@@ -462,7 +462,7 @@ function openDetails(requestId) {
       <span class="pill">${labelCategory(r.category)}</span>
       <span class="pill">Qtd: ${r.quantity}</span>
       <span class="pill">Máx: ${formatEur(r.maxPrice)}</span>
-      <span class="pill">Prazo: ${r.deadlineDays} dias</span>
+      <span class="pill">Prazo: ${r.deadlineDays} meses</span>
       ${r.urgent ? `<span class="pill" style="border-color: rgba(231,76,60,0.45); color:#e74c3c;">URGENTE</span>` : ""}
     </div>
     <div style="margin-top:10px; color:rgba(255,255,255,0.78)">

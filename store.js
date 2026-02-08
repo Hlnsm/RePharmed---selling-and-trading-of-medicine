@@ -1,4 +1,4 @@
-/* store.js (FIXED) */
+/* store.js (Create listing + persist + notifications) */
 
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
@@ -7,6 +7,9 @@ const COURIER_FEE_EUR = 4.90;
 const PICKUP_FEE_EUR = 0.00;
 const PICKUP_READY_MIN = 60;
 const PAYMENT_SIM_MS = 1100;
+
+// listings persistence
+const LS_LISTINGS_KEY = "ps_listings_v1";
 
 function normalize(str) {
   return (str || "")
@@ -17,7 +20,6 @@ function normalize(str) {
 }
 
 function formatEur(v) {
-  // ✅ FIX: style tem de ser "currency"
   return Number(v || 0).toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
 }
 
@@ -27,15 +29,57 @@ function labelCategory(cat) {
     antibioticos: "Antibióticos",
     dermo: "Dermo",
     gripe: "Gripe & Constipação",
-    vitaminas: "Vitaminas"
+    vitaminas: "Vitaminas",
+    outros: "Outros",
   })[cat] || "Outros";
 }
 
 function badgeForExpiry(days) {
-  if (days <= 7) return { cls: "badge--bad", text: `Expira em ${days} dias` };
-  if (days <= 21) return { cls: "badge--warn", text: `Expira em ${days} dias` };
-  return { cls: "badge--good", text: `Expira em ${days} dias` };
+  if (days <= 3) return { cls: "badge--bad", text: `Expira em ${days} meses` };
+  if (days <= 7) return { cls: "badge--warn", text: `Expira em ${days} meses` };
+  return { cls: "badge--good", text: `Expira em ${days} meses` };
 }
+
+/* =========================
+   LISTINGS persistence
+   ========================= */
+
+function loadListings() {
+  try {
+    const raw = localStorage.getItem(LS_LISTINGS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+
+  // fallback seed do data.js
+  const seed = Array.isArray(window.PS?.listings) ? window.PS.listings.slice() : [];
+  saveListings(seed);
+  return seed;
+}
+
+function saveListings(items) {
+  try {
+    localStorage.setItem(LS_LISTINGS_KEY, JSON.stringify(items || []));
+  } catch {}
+}
+
+function setListings(items) {
+  // manter também em memória (para compatibilidade com outros ficheiros)
+  window.PS = window.PS || {};
+  window.PS.listings = items;
+  saveListings(items);
+}
+
+function ensureListingsLoaded() {
+  const items = loadListings();
+  setListings(items);
+}
+
+/* =========================
+   Sorting / rendering
+   ========================= */
 
 function applySort(items, mode, query) {
   const arr = items.slice();
@@ -56,8 +100,8 @@ function applySort(items, mode, query) {
       if (name.includes(q)) s += 3;
       if (sub.includes(q)) s += 2;
       if (lab.includes(q)) s += 1;
-      s += Math.max(0, (30 - it.expiresInDays)) / 30;
-      s += Math.max(0, (10 - it.distanceKm)) / 10;
+      s += Math.max(0, (30 - Number(it.expiresInDays || 999))) / 30;
+      s += Math.max(0, (10 - Number(it.distanceKm || 999))) / 10;
       return s;
     };
 
@@ -90,7 +134,7 @@ function renderCards(items) {
   resultCount.textContent = `${items.length} anúncio(s)`;
 
   for (const it of items) {
-    const b = badgeForExpiry(it.expiresInDays);
+    const b = badgeForExpiry(Number(it.expiresInDays || 0));
 
     const el = document.createElement("article");
     el.className = "card";
@@ -102,7 +146,7 @@ function renderCards(items) {
       <div class="card__body">
         <div class="card__title">${it.name}</div>
         <div class="card__sub">
-          ${it.seller} • ${it.city} • ${it.distanceKm.toFixed(1)} km • Stock: ${it.stock}
+          ${it.seller} • ${it.city} • ${Number(it.distanceKm || 0).toFixed(1)} km • Stock: ${it.stock}
         </div>
         <div class="pills">
           <span class="pill">${labelCategory(it.category)}</span>
@@ -116,8 +160,8 @@ function renderCards(items) {
           <div class="small">ID: ${it.id}</div>
         </div>
         <div class="card__cta">
-  <button class="btn btn--primary" data-action="order" data-id="${it.id}">Pedir</button>
-</div>
+          <button class="btn btn--primary" data-action="order" data-id="${it.id}">Pedir</button>
+        </div>
       </div>
     `;
     cards.appendChild(el);
@@ -136,8 +180,9 @@ function applyFilters() {
 
   const sortMode = document.querySelector("#sortSelect")?.value || "relevance";
 
-  // ✅ GUARD
   let items = Array.isArray(window.PS?.listings) ? window.PS.listings.slice() : [];
+
+  items = items.filter(it => Number(it.stock || 0) > 0); 
 
   if (q) {
     items = items.filter((it) =>
@@ -145,13 +190,17 @@ function applyFilters() {
     );
   }
   if (cat !== "all") items = items.filter((it) => it.category === cat);
-  items = items.filter((it) => it.distanceKm <= dMax);
-  if (pMin !== null && !Number.isNaN(pMin)) items = items.filter((it) => it.price >= pMin);
-  if (pMax !== null && !Number.isNaN(pMax)) items = items.filter((it) => it.price <= pMax);
+  items = items.filter((it) => Number(it.distanceKm || 0) <= dMax);
+  if (pMin !== null && !Number.isNaN(pMin)) items = items.filter((it) => Number(it.price || 0) >= pMin);
+  if (pMax !== null && !Number.isNaN(pMax)) items = items.filter((it) => Number(it.price || 0) <= pMax);
 
   items = applySort(items, sortMode, q);
   renderCards(items);
 }
+
+/* =========================
+   Checkout
+   ========================= */
 
 function openReceiptSuccess(receipt) {
   const modal = document.querySelector("#checkoutModal");
@@ -181,7 +230,7 @@ function openReceiptSuccess(receipt) {
     : "";
 
   body.innerHTML = `
-    <div style="font-weight:950; font-size:18px;">✅ Pedido criado (demo)</div>
+    <div style="font-weight:950; font-size:18px;">✅ Pedido criado</div>
     <div class="small">Recibo: <strong>${receipt.id}</strong> • Referência: <strong>${receipt.ref}</strong></div>
     <div class="hr"></div>
 
@@ -203,7 +252,7 @@ function openReceiptSuccess(receipt) {
 
   function close() {
     modal.hidden = true;
-    payBtn.textContent = "Confirmar (demo)";
+    payBtn.textContent = "Confirmar";
   }
 
   document.querySelector("#checkoutClose").onclick = close;
@@ -223,15 +272,15 @@ function openCheckoutModal(listing) {
     return;
   }
 
-  payBtn.textContent = "Confirmar (demo)";
+  payBtn.textContent = "Confirmar";
   payBtn.disabled = false;
 
-  const finalPrice = Math.max(0, (listing.price || 0) * (1 - (listing.discountPct || 0) / 100));
+  const finalPrice = Math.max(0, (Number(listing.price || 0)) * (1 - (Number(listing.discountPct || 0)) / 100));
 
   body.innerHTML = `
     <div style="font-weight:900; margin-bottom:6px">${listing.name}</div>
     <div style="color:rgba(255,255,255,0.72); font-size:12px">
-      Vendedor: ${listing.seller} • ${listing.city} • ${listing.distanceKm.toFixed(1)} km
+      Vendedor: ${listing.seller} • ${listing.city} • ${Number(listing.distanceKm || 0).toFixed(1)} km
     </div>
 
     <div class="hr"></div>
@@ -255,7 +304,7 @@ function openCheckoutModal(listing) {
     <div class="field">
       <label>Método de entrega</label>
       <select id="ckDelivery">
-        <option value="courier">Entrega por estafeta (24–48h) — demo</option>
+        <option value="courier">Entrega por estafeta (24–48h)</option>
         <option value="pickup">Ir buscar à farmácia — gera código</option>
       </select>
     </div>
@@ -270,7 +319,7 @@ function openCheckoutModal(listing) {
 
     <div class="field">
       <label>Dados de pagamento (falso)</label>
-      <input id="ckName" placeholder="Nome (demo)" value="Farmácia Demo" />
+      <input id="ckName" placeholder="Nome" value="Farmácia Demo" />
       <div style="height:8px"></div>
       <input id="ckCard" placeholder="Nº cartão (demo) 4242 4242 4242 4242" value="4242 4242 4242 4242" />
       <div style="height:8px"></div>
@@ -311,7 +360,7 @@ function openCheckoutModal(listing) {
   let pickupCode = "";
 
   function recalc() {
-    const qty = Math.max(1, Math.min(Number(qtyEl.value || 1), listing.stock));
+    const qty = Math.max(1, Math.min(Number(qtyEl.value || 1), Number(listing.stock || 0)));
     qtyEl.value = String(qty);
 
     const isPickup = delEl.value === "pickup";
@@ -346,7 +395,7 @@ function openCheckoutModal(listing) {
 
   payBtn.onclick = () => {
     const qty = Number(qtyEl.value || 1);
-    if (!qty || qty < 1 || qty > listing.stock) { window.PS?.showToast?.("Quantidade inválida"); return; }
+    if (!qty || qty < 1 || qty > Number(listing.stock || 0)) { window.PS?.showToast?.("Quantidade inválida"); return; }
 
     const name = document.querySelector("#ckName").value.trim();
     const card = document.querySelector("#ckCard").value.trim();
@@ -362,7 +411,7 @@ function openCheckoutModal(listing) {
     payBtn.disabled = true;
     const oldTxt = payBtn.textContent;
     payBtn.textContent = "A processar pagamento…";
-    if (payStatusEl) payStatusEl.textContent = "A validar dados e a confirmar transação (demo)…";
+    if (payStatusEl) payStatusEl.textContent = "A validar dados e a confirmar transação…";
 
     setTimeout(() => {
       const receipts = window.PS?.loadReceipts?.() || [];
@@ -401,7 +450,7 @@ function openCheckoutModal(listing) {
 
         notes: isPickup
           ? `Levantamento em loja. Código: ${usedPickupCode}. Pronto por volta das ${pickupReadyAt}.`
-          : `Entrega por estafeta (demo). Taxa: ${deliveryFee.toFixed(2)}€`,
+          : `Entrega por estafeta. Taxa: ${deliveryFee.toFixed(2)}€`,
 
         tracking: (!isPickup)
           ? {
@@ -419,27 +468,35 @@ function openCheckoutModal(listing) {
         pickupReadyAtTs,
         pickupReadyAt,
 
-        // ----------------------------
-        // ✅ Snapshot do anúncio (para estatísticas)
-        // ----------------------------
+        // snapshot do anúncio (stats)
         listingId: listing.id,
         category: listing.category,
         discountPct: Number(listing.discountPct || 0),
         expiresInDays: Number(listing.expiresInDays ?? null),
-
-        // preços unitários (para calcular poupança)
         baseUnitPrice: Number((listing.price || 0).toFixed(2)),
         finalUnitPrice: Number(finalPrice.toFixed(2))
       };
 
-
       receipts.unshift(receipt);
       window.PS?.saveReceipts?.(receipts);
 
-      const it = window.PS?.listings?.find(x => x.id === listing.id);
-      if (it) it.stock = Math.max(0, it.stock - qty);
+      // atualizar stock + persistir listings
+      const all = Array.isArray(window.PS?.listings) ? window.PS.listings.slice() : [];
+      const idx = all.findIndex(x => x.id === listing.id);
+      if (idx >= 0) {
+        all[idx].stock = Math.max(0, Number(all[idx].stock || 0) - qty);
+        setListings(all);
+      }
 
-      if (payStatusEl) payStatusEl.textContent = "Pagamento aprovado ✅ (demo)";
+      // ✅ notificação para aparecer no menu (common.js)
+      window.PS?.pushNotification?.({
+        kind: "purchase",
+        title: "Compra concluída (demo)",
+        message: `${receipt.item} • ${qty} un. • Total ${formatEur(receipt.total)}`,
+        href: "receipts.html"
+      });
+
+      if (payStatusEl) payStatusEl.textContent = "Pagamento aprovado ✅";
       payBtn.disabled = false;
       payBtn.textContent = oldTxt;
 
@@ -452,6 +509,176 @@ function openCheckoutModal(listing) {
     }, PAYMENT_SIM_MS);
   };
 }
+
+/* =========================
+   Create listing modal
+   ========================= */
+
+function openCreateListingModal() {
+  const modal = document.querySelector("#newListingModal");
+  const body = document.querySelector("#newListingBody");
+  const btnCreate = document.querySelector("#newListingCreate");
+  if (!modal || !body || !btnCreate) {
+    window.PS?.showToast?.("Modal de anúncio não encontrado. Confirma o HTML do newListingModal.");
+    return;
+  }
+
+  // opções de imagem (as que tens)
+  const imgOptions = [
+    "images/paracetamol.jpg",
+    "images/ibuprofeno.jpg",
+    "images/amoxicilina.jpg",
+    "images/vitamina-c.jpg",
+    "images/spray-nasal.jpg",
+    "images/antigripal.jpg",
+    "images/dermo-creme.jpg",
+    "images/probiotico.jpg"
+  ];
+
+  body.innerHTML = `
+    <div class="field">
+      <label>Nome do medicamento</label>
+      <input id="nlName" placeholder="Ex.: Paracetamol 500mg (20 comp.)" />
+    </div>
+
+    <div class="field">
+      <label>Categoria</label>
+      <select id="nlCat">
+        <option value="analgesicos">Analgésicos</option>
+        <option value="antibioticos">Antibióticos</option>
+        <option value="dermo">Dermo</option>
+        <option value="gripe">Gripe &amp; Constipação</option>
+        <option value="vitaminas">Vitaminas</option>
+        <option value="outros">Outros</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Substância ativa</label>
+      <input id="nlSub" placeholder="Ex.: paracetamol" />
+    </div>
+
+    <div class="field">
+      <label>Laboratório / Marca</label>
+      <input id="nlLab" placeholder="Ex.: Genéricos Lx" />
+    </div>
+
+    <div class="detail-grid">
+      <div class="field">
+        <label>Preço base (€)</label>
+        <input id="nlPrice" type="number" min="0" step="0.1" value="5.0" />
+      </div>
+      <div class="field">
+        <label>Desconto (%)</label>
+        <input id="nlDisc" type="number" min="0" max="90" step="1" value="40" />
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="field">
+        <label>Validade (meses até expirar)</label>
+        <input id="nlExp" type="number" min="1" step="1" value="14" />
+      </div>
+      <div class="field">
+        <label>Stock</label>
+        <input id="nlStock" type="number" min="1" step="1" value="10" />
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="field">
+        <label>Distância (km)</label>
+        <input id="nlDist" type="number" min="0" step="0.1" value="3.5" />
+      </div>
+      <div class="field">
+        <label>Cidade</label>
+        <input id="nlCity" placeholder="Lisboa" value="Lisboa" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Vendedor (farmácia)</label>
+      <input id="nlSeller" placeholder="Farmácia Central" value="Farmácia Central (Demo)" />
+    </div>
+
+    <div class="field">
+      <label>Imagem</label>
+      <select id="nlImg">
+        ${imgOptions.map(p => `<option value="${p}">${p.replace("images/","")}</option>`).join("")}
+      </select>
+      <div class="small">Escolhe uma das imagens já existentes no projeto.</div>
+    </div>
+
+    <div class="small">Protótipo: o anúncio fica guardado no teu browser (localStorage).</div>
+  `;
+
+  function close() { modal.hidden = true; }
+
+  document.querySelector("#newListingClose").onclick = close;
+  document.querySelector("#newListingCancel").onclick = close;
+  modal.onclick = (e) => { if (e.target.id === "newListingModal") close(); };
+
+  btnCreate.onclick = () => {
+    const name = document.querySelector("#nlName").value.trim();
+    if (!name) { window.PS?.showToast?.("Nome é obrigatório"); return; }
+
+    const cat = document.querySelector("#nlCat").value;
+    const sub = document.querySelector("#nlSub").value.trim();
+    const lab = document.querySelector("#nlLab").value.trim() || "—";
+    const price = Number(document.querySelector("#nlPrice").value || 0);
+    const disc = Number(document.querySelector("#nlDisc").value || 0);
+    const exp = Number(document.querySelector("#nlExp").value || 1);
+    const stock = Number(document.querySelector("#nlStock").value || 1);
+    const dist = Number(document.querySelector("#nlDist").value || 0);
+    const city = document.querySelector("#nlCity").value.trim() || "Lisboa";
+    const seller = document.querySelector("#nlSeller").value.trim() || "Farmácia Demo";
+    const img = document.querySelector("#nlImg").value;
+
+    if (!Number.isFinite(price) || price <= 0) { window.PS?.showToast?.("Preço inválido"); return; }
+    if (!Number.isFinite(stock) || stock < 1) { window.PS?.showToast?.("Stock inválido"); return; }
+    if (!Number.isFinite(exp) || exp < 1) { window.PS?.showToast?.("Validade inválida"); return; }
+
+    const all = Array.isArray(window.PS?.listings) ? window.PS.listings.slice() : [];
+    const nextId = `PS-${String(all.length + 1).padStart(3, "0")}-${Math.floor(Math.random() * 900 + 100)}`;
+
+    const listing = {
+      id: nextId,
+      name,
+      category: cat,
+      activeSubstance: sub || name,
+      lab,
+      price: Number(price.toFixed(2)),
+      discountPct: Math.max(0, Math.min(90, Math.round(disc))),
+      expiresInDays: Math.round(exp),
+      distanceKm: Number(dist.toFixed(1)),
+      seller,
+      city,
+      stock: Math.round(stock),
+      image: img
+    };
+
+    all.unshift(listing);
+    setListings(all);
+
+    // notificação (opcional, fica fixe)
+    window.PS?.pushNotification?.({
+      kind: "info",
+      title: "Anúncio publicado",
+      message: `${listing.name} • Stock ${listing.stock} • ${formatEur(listing.price)}`,
+      href: "index.html"
+    });
+
+    close();
+    window.PS?.showToast?.(`Anúncio criado: ${listing.id}`);
+    applyFilters();
+  };
+
+  modal.hidden = false;
+}
+
+/* =========================
+   Deep links
+   ========================= */
 
 function applyDeepLinkFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -491,14 +718,14 @@ function applyDeepLinkFromUrl() {
   }
 }
 
+/* =========================
+   Init
+   ========================= */
+
 function initStore() {
   window.PS?.initCommonUI?.();
 
-  // ✅ Se isto falhar, o problema é data.js não estar a correr
-  if (!Array.isArray(window.PS?.listings)) {
-    window.PS?.showToast?.("ERRO: PS.listings não existe. Confirma que data.js está a ser carregado ANTES do store.js");
-    console.warn("PS:", window.PS);
-  }
+  ensureListingsLoaded();
 
   const searchInput = document.querySelector("#searchInput");
   const clearBtn = document.querySelector("#clearSearchBtn");
@@ -543,7 +770,7 @@ function initStore() {
   }
 
   const newListingBtn = document.querySelector("#newListingBtn");
-  if (newListingBtn) newListingBtn.addEventListener("click", () => window.PS?.showToast?.("Demo: criar anúncio (próximo passo)"));
+  if (newListingBtn) newListingBtn.addEventListener("click", openCreateListingModal);
 
   const cards = document.querySelector("#cards");
   if (cards) {
@@ -554,10 +781,7 @@ function initStore() {
       const id = btn.dataset.id;
       const action = btn.dataset.action;
 
-      if (action === "details") {
-        const it = window.PS?.listings?.find((x) => x.id === id);
-        if (it) window.PS?.showToast?.(`${it.name} — ${formatEur(it.price)} — ${it.seller}`);
-      } else if (action === "order") {
+      if (action === "order") {
         const it = window.PS?.listings?.find((x) => x.id === id);
         if (it) openCheckoutModal(it);
       }
@@ -567,5 +791,4 @@ function initStore() {
   applyFilters();
 }
 
-// ✅ garante DOM pronto
 document.addEventListener("DOMContentLoaded", initStore);

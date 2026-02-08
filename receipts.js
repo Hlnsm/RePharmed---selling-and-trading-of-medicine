@@ -38,7 +38,7 @@ function seedReceipts(){
       quantity: 40,
       total: 116.00,
       ref: "ORD-1842",
-      notes: "Pagamento por referência (demo).",
+      notes: "Pagamento por referência.",
       tracking: null
     },
     {

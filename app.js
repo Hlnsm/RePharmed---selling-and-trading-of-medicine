@@ -43,7 +43,7 @@ function initCommonUI() {
     if (!notifDot) return;
     const wasVisible = !notifDot.hidden;
     notifDot.hidden = wasVisible;
-    showToast(wasVisible ? "Notificações marcadas como vistas" : "Tens novas notificações (demo)");
+    showToast(wasVisible ? "Notificações marcadas como vistas" : "Tens novas notificações ");
   });
 }
 
