@@ -6,6 +6,24 @@ const LS_THREADS = "ps_dm_threads_v1";
 const LS_MESSAGES = "ps_dm_messages_v1";
 const LS_ME = "ps_current_pharmacy_v1"; // demo: farmácia atual
 
+const AUTO_REPLIES = [
+  "Obrigado pela mensagem, vou analisar 👍",
+  "Recebido! Vamos considerar a proposta.",
+  "Obrigado, assim que possível damos feedback.",
+  "Mensagem recebida, vamos avaliar internamente.",
+  "Obrigado pelo contacto, vamos ter isso em conta.",
+  "Recebido 👍 Iremos considerar a proposta.",
+  "Obrigado, a equipa vai analisar.",
+  "Mensagem recebida, voltamos em breve.",
+  "Obrigado pelo interesse, vamos considerar.",
+  "Recebido! Analisamos e dizemos algo."
+];
+
+function getAutoReply() {
+  return AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
+}
+
+
 function normalize(str) {
   return (str || "")
     .toString()
@@ -394,6 +412,44 @@ function ensureThreadForIntent(intent) {
    Send message
 ------------------------- */
 
+function sendAutoReply(threadId) {
+  const thread = getThreadById(threadId);
+  if (!thread) return;
+
+  const me = getMe();
+  const other = (thread.participants || []).find(p => p !== me) || "—";
+  const reply = getAutoReply();
+
+  setTimeout(() => {
+    const m = {
+      id: `MSG-${Math.floor(Math.random() * 900000 + 100000)}`,
+      threadId,
+      from: other,                 // ✅ agora é o nome real do "outro"
+      text: reply,
+      createdAt: nowStr(),
+      createdAtTs: Date.now()
+    };
+
+    pushMessage(m);
+
+    // update thread (para aparecer na inbox sem refresh)
+    thread.lastMessageAt = m.createdAt;
+    thread.lastMessageAtTs = m.createdAtTs;
+    thread.lastMessageText = reply.slice(0, 120);
+
+    thread.unreadBy = thread.unreadBy || {};
+    thread.unreadBy[me] = (thread.unreadBy[me] || 0) + 1; // ✅ unread para ti (se estiveres noutra thread)
+
+    upsertThread(thread);
+
+    // se estiveres a ver esta thread, re-render imediato
+    if (activeThreadId === threadId) renderMessages(thread);
+    renderThreadList();
+  }, 800);
+}
+
+
+
 function sendMessage() {
   if (!activeThreadId) {
     window.PS?.showToast?.("Seleciona uma conversa primeiro.");
@@ -431,6 +487,9 @@ function sendMessage() {
   upsertThread(thread);
 
   input.value = "";
+  sendAutoReply(activeThreadId);
+
+
   renderMessages(thread);
   renderThreadList();
 }
