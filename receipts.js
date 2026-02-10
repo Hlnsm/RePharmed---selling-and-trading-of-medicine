@@ -180,6 +180,9 @@ function renderDetail(item){
 
   tag.innerHTML = `<span class="tag ${typeTagClass(item.type)}">${typeLabel(item.type)}</span>`;
 
+  const dmHref =
+    `dm.html?type=receipt&id=${encodeURIComponent(item.id)}&with=${encodeURIComponent(item.counterparty || "")}`;
+
   detail.innerHTML = `
     <div class="detail-grid">
       <div class="kv"><div class="k">ID</div><div class="v">${item.id}</div></div>
@@ -193,9 +196,15 @@ function renderDetail(item){
       <div class="kv"><div class="k">Total</div><div class="v">${formatEur(item.total)}</div></div>
       <div class="kv"><div class="k">Notas</div><div class="v">${item.notes || "—"}</div></div>
     </div>
+
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px;">
+      <a class="btn btn--primary" href="${dmHref}">Mensagem</a>
+    </div>
+
     ${renderTracking(item.tracking)}
   `;
 }
+
 
 function getFiltered(){
   const q = normalize($("#rcSearch").value.trim());

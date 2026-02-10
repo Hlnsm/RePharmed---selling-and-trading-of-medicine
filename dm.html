@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RePharmed — Mensagens</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div id="backdrop" class="backdrop" hidden></div>
+
+  <aside id="sidebar" class="sidebar" aria-hidden="true">
+    <div class="sidebar__header">
+      <div class="brand-mini">
+        <img class="logo" src="images/logo.png" alt="RePharmed">
+        <div>
+          <div class="brand-mini__name">RePharmed</div>
+          <div class="brand-mini__tag">B2B entre farmácias</div>
+        </div>
+      </div>
+
+      <button id="closeSidebarBtn" class="icon-btn" aria-label="Fechar menu" type="button">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M18 6L6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a class="nav-item" href="index.html" data-nav="store"><span class="nav-item__icon">🏪</span> Loja</a>
+      <a class="nav-item" href="orders.html" data-nav="orders"><span class="nav-item__icon">🧾</span> Pedidos</a>
+      <a class="nav-item" href="profile.html" data-nav="profile"><span class="nav-item__icon">👤</span> Perfil</a>
+      <a class="nav-item" href="receipts.html" data-nav="receipts"><span class="nav-item__icon">📦</span> Recibos</a>
+      <a class="nav-item is-active" href="dm.html" data-nav="dm"><span class="nav-item__icon">💬</span> Mensagens</a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="hint">Protótipo. Sem mensagens reais.</div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar__left">
+      <button id="menuBtn" class="icon-btn" aria-label="Abrir menu" type="button">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="brand">
+        <img class="logo" src="images/logo.png" alt="RePharmed">
+        <div class="brand__text">
+          <div class="brand__name">RePharmed</div>
+          <div class="brand__tag">Mensagens & negociação</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar__center"></div>
+
+    <div class="topbar__right">
+      <div class="notif">
+        <button id="notifBtn" class="icon-btn" aria-label="Notificações" type="button">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22Z" fill="currentColor" opacity="0.9"/>
+            <path d="M18 16H6c1.2-1.2 2-2.7 2-4.5V9.5A4 4 0 0 1 12 5.5a4 4 0 0 1 4 4v2c0 1.8.8 3.3 2 4.5Z"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M10 5.5a2 2 0 0 1 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <!-- common.js injeta o menu se faltar -->
+      </div>
+
+      <a class="icon-btn" aria-label="Perfil" href="profile.html">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M20 21a8 8 0 1 0-16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>Mensagens</h1>
+      <p>Negociações por anúncio (tipo OLX) + conversas por pedidos/recibos.</p>
+    </div>
+
+    <section class="dm-layout">
+      <!-- Inbox -->
+      <div class="panel dm-left">
+        <div class="panel__row">
+          <div class="panel__title">Inbox</div>
+          <div class="small" id="dmMeTag"></div>
+        </div>
+
+        <div class="filters" style="margin-top:10px;">
+          <div class="filter" style="flex:1; min-width:220px;">
+            <label class="filter__label" for="dmSearch">Pesquisar</label>
+            <input id="dmSearch" class="filter__control" type="search" placeholder="farmácia, item, ID..." />
+          </div>
+
+          <div class="filter" style="min-width:200px;">
+            <label class="filter__label" for="dmFilter">Filtro</label>
+            <select id="dmFilter" class="filter__control">
+              <option value="all">Todas</option>
+              <option value="listing">Anúncios</option>
+              <option value="request">Pedidos</option>
+              <option value="receipt">Recibos</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="dmThreadList" class="list list--scroll"></div>
+      </div>
+
+      <!-- Thread -->
+      <div class="panel dm-right">
+        <div class="panel__row">
+          <div>
+            <div class="panel__title" id="dmTitle">Seleciona uma conversa</div>
+            <div class="small" id="dmSub">—</div>
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center;">
+            <a id="dmContextLink" class="btn" href="#" style="height:34px; display:none;">Ver contexto</a>
+            <button id="dmClearBtn" class="btn" type="button" style="height:34px;">Limpar</button>
+          </div>
+        </div>
+
+        <div id="dmContextCard" class="dm-context" hidden></div>
+
+        <div id="dmMessages" class="dm-messages">
+          <div class="empty" style="margin-top:10px">
+            <div class="empty__title">Sem conversa selecionada</div>
+            <div class="empty__text">Abre uma a partir da Loja/Recibos/Pedidos ou escolhe da inbox.</div>
+          </div>
+        </div>
+
+        <div class="dm-composer">
+          <input id="dmInput" class="filter__control" type="text" placeholder="Escreve uma mensagem..." />
+          <button id="dmSendBtn" class="btn btn--primary" type="button">Enviar</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="common.js"></script>
+  <script src="dm.js"></script>
+</body>
+</html>

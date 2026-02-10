@@ -160,6 +160,7 @@ function renderCards(items) {
           <div class="small">ID: ${it.id}</div>
         </div>
         <div class="card__cta">
+          <button class="btn" data-action="dm" data-id="${it.id}">Negociar</button>
           <button class="btn btn--primary" data-action="order" data-id="${it.id}">Pedir</button>
         </div>
       </div>
@@ -167,6 +168,7 @@ function renderCards(items) {
     cards.appendChild(el);
   }
 }
+
 
 function applyFilters() {
   const q = normalize((document.querySelector("#searchInput")?.value || "").trim());
@@ -781,9 +783,16 @@ function initStore() {
       const id = btn.dataset.id;
       const action = btn.dataset.action;
 
+      const it = window.PS?.listings?.find((x) => x.id === id);
+      if (!it) return;
+
       if (action === "order") {
-        const it = window.PS?.listings?.find((x) => x.id === id);
-        if (it) openCheckoutModal(it);
+        openCheckoutModal(it);
+      }
+
+      if (action === "dm") {
+        const withWho = encodeURIComponent(it.seller || "");
+        window.location.href = `dm.html?type=listing&id=${encodeURIComponent(it.id)}&with=${withWho}`;
       }
     });
   }

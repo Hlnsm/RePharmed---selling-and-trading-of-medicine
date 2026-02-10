@@ -207,6 +207,7 @@ function renderRequestCards(items) {
           <div class="small">ID: ${r.id}</div>
         </div>
         <div class="card__cta">
+          <button class="btn" data-action="dm" data-id="${r.id}">Mensagem</button>
           <button class="btn btn--primary" data-action="respond" data-id="${r.id}">Responder</button>
         </div>
       </div>
@@ -215,6 +216,7 @@ function renderRequestCards(items) {
     cards.appendChild(el);
   }
 }
+
 
 function applyFilters() {
   const q = normalize($("#reqSearch").value.trim());
@@ -500,14 +502,26 @@ function initOrdersMarketplace() {
   });
 
   $("#reqCards").addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-action]");
-    if (!btn) return;
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
 
-    const id = btn.dataset.id;
-    const action = btn.dataset.action;
+  const id = btn.dataset.id;
+  const action = btn.dataset.action;
 
-    if (action === "respond") openRespond(id);
-  });
+  if (action === "respond") {
+    openRespond(id);
+    return;
+  }
+
+  if (action === "dm") {
+    const reqs = PS.loadRequests();
+    const r = reqs.find(x => x.id === id);
+    const withWho = encodeURIComponent(r?.requester || "");
+    window.location.href = `dm.html?type=request&id=${encodeURIComponent(id)}&with=${withWho}`;
+    return;
+  }
+});
+
 
   if (PS.loadRequests().length === 0) {
     seedRequests();
